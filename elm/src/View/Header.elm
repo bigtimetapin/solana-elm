@@ -9,6 +9,7 @@ import Model.User.State as UserState
 import Model.Wallet as Wallet
 import Msg.Global as FromGlobal
 import Msg.Msg as Msg exposing (Msg(..))
+import Msg.User.Msg as UserMsg
 
 
 view : Global -> Html Msg
@@ -117,4 +118,28 @@ viewGlobal global =
                 ]
                 [ Html.text <|
                     Wallet.slice wallet
+                ]
+
+        HasUser user ->
+            Html.div
+                [ class "is-text-container-5 is-family-secondary"
+                ]
+                [ Html.div
+                    []
+                    [ Html.text <|
+                        Wallet.slice user.wallet
+                    ]
+                , Html.div
+                    [ class "is-light-text-container-4"
+                    ]
+                    [ Html.button
+                        [ onClick <|
+                            FromUser <|
+                                UserMsg.ToFetched
+                                    user
+                        ]
+                        [ Html.text <|
+                            "view increment"
+                        ]
+                    ]
                 ]

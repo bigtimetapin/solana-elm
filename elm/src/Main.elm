@@ -80,6 +80,19 @@ update msg model =
 
         FromUser fromUserMsg ->
             case fromUserMsg of
+                UserMsg.ToFetched user ->
+                    ( { model
+                        | state =
+                            { local =
+                                Local.User <|
+                                    UserState.Fetched user
+                            , global = model.state.global
+                            , exception = model.state.exception
+                            }
+                      }
+                    , Cmd.none
+                    )
+
                 UserMsg.Increment ->
                     ( { model
                         | state =
@@ -115,15 +128,28 @@ update msg model =
                                                         UserListener.Fetched ->
                                                             let
                                                                 f user =
-                                                                    { model
-                                                                        | state =
-                                                                            { local =
-                                                                                Local.User <|
-                                                                                    UserState.Fetched user
-                                                                            , global = model.state.global
-                                                                            , exception = Exception.Closed
+                                                                    case model.state.global of
+                                                                        Global.HasUser _ ->
+                                                                            { model
+                                                                                | state =
+                                                                                    { local =
+                                                                                        Local.User <|
+                                                                                            UserState.Fetched user
+                                                                                    , global = Global.HasUser user
+                                                                                    , exception = Exception.Closed
+                                                                                    }
                                                                             }
-                                                                    }
+
+                                                                        _ ->
+                                                                            { model
+                                                                                | state =
+                                                                                    { local =
+                                                                                        Local.User <|
+                                                                                            UserState.Fetched user
+                                                                                    , global = model.state.global
+                                                                                    , exception = Exception.Closed
+                                                                                    }
+                                                                            }
                                                             in
                                                             Listener.decode model json User.decode f
 
@@ -131,15 +157,30 @@ update msg model =
                                         Listener.Global toGlobal ->
                                             case toGlobal of
                                                 ToGlobal.FoundWalletDisconnected ->
-                                                    ( { model
-                                                        | state =
-                                                            { local = model.state.local
-                                                            , global = Global.NoWalletYet
-                                                            , exception = Exception.Closed
-                                                            }
-                                                      }
-                                                    , Cmd.none
-                                                    )
+                                                    case model.state.local of
+                                                        Local.User (UserState.Fetched _) ->
+                                                            ( { model
+                                                                | state =
+                                                                    { local =
+                                                                        Local.User <|
+                                                                            UserState.Top
+                                                                    , global = Global.NoWalletYet
+                                                                    , exception = Exception.Closed
+                                                                    }
+                                                              }
+                                                            , Cmd.none
+                                                            )
+
+                                                        _ ->
+                                                            ( { model
+                                                                | state =
+                                                                    { local = model.state.local
+                                                                    , global = Global.NoWalletYet
+                                                                    , exception = Exception.Closed
+                                                                    }
+                                                              }
+                                                            , Cmd.none
+                                                            )
 
                                                 ToGlobal.FoundMissingWalletPlugin ->
                                                     ( { model
@@ -155,15 +196,54 @@ update msg model =
                                                 ToGlobal.FoundWallet ->
                                                     let
                                                         f wallet =
-                                                            { model
-                                                                | state =
-                                                                    { local = model.state.local
-                                                                    , global = Global.HasWallet wallet
-                                                                    , exception = Exception.Closed
+                                                            case model.state.local of
+                                                                Local.User (UserState.Fetched _) ->
+                                                                    { model
+                                                                        | state =
+                                                                            { local =
+                                                                                Local.User <|
+                                                                                    UserState.Top
+                                                                            , global = Global.HasWallet wallet
+                                                                            , exception = Exception.Closed
+                                                                            }
                                                                     }
-                                                            }
+
+                                                                _ ->
+                                                                    { model
+                                                                        | state =
+                                                                            { local = model.state.local
+                                                                            , global = Global.HasWallet wallet
+                                                                            , exception = Exception.Closed
+                                                                            }
+                                                                    }
                                                     in
                                                     Listener.decode model json Wallet.decode f
+
+                                                ToGlobal.FoundUser ->
+                                                    let
+                                                        f user =
+                                                            case model.state.local of
+                                                                Local.User (UserState.Fetched _) ->
+                                                                    { model
+                                                                        | state =
+                                                                            { local =
+                                                                                Local.User <|
+                                                                                    UserState.Fetched user
+                                                                            , global = Global.HasUser user
+                                                                            , exception = Exception.Closed
+                                                                            }
+                                                                    }
+
+                                                                _ ->
+                                                                    { model
+                                                                        | state =
+                                                                            { local = model.state.local
+                                                                            , global = Global.HasUser user
+                                                                            , exception = Exception.Closed
+                                                                            }
+                                                                    }
+                                                    in
+                                                    Listener.decode model json User.decode f
 
                                 -- undefined role
                                 Nothing ->

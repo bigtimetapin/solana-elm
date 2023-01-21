@@ -19,6 +19,7 @@ export async function ix(app, provider: AnchorProvider, program: Program<SolanaE
             }
         ).rpc();
     const user = await getUserPda(
+        provider,
         program,
         userPda
     );

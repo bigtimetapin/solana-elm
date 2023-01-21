@@ -2,11 +2,11 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta content="width=device-width, initial-scale=1" name="viewport">
     <!-- Font Awesome-->
-    <script src="https://kit.fontawesome.com/2da0275137.js" crossorigin="anonymous"></script>
+    <script crossorigin="anonymous" src="https://kit.fontawesome.com/2da0275137.js"></script>
     <!-- Custom Styles -->
-    <link rel="stylesheet" href="css/custom.css">
+    <link href="css/custom.css" rel="stylesheet">
 </head>
 <body>
 <pre id="elm"></pre>
@@ -15,15 +15,15 @@
     // init elm
     let app = Elm.Main.init({node: document.getElementById("elm")});
     // import js bundle
-    import {main} from "./js/bundle.js";
+    import {main, onWalletChange} from "./js/bundle.js";
     //  listen for sender
     app.ports.sender.subscribe(async function (json) {
         await main(app, json);
     });
-    // // listen for wallet change
-    // await onWalletChange(
-    //     app
-    // );
+    // listen for wallet change
+    await onWalletChange(
+        app
+    );
 </script>
 </body>
 </html>

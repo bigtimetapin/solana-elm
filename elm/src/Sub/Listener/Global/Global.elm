@@ -5,6 +5,7 @@ type ToGlobal
     = FoundWalletDisconnected
     | FoundMissingWalletPlugin -- no browser plugin installed
     | FoundWallet
+    | FoundUser
 
 
 fromString : String -> Maybe ToGlobal
@@ -18,6 +19,9 @@ fromString string =
 
         "global-found-wallet" ->
             Just FoundWallet
+
+        "global-found-user" ->
+            Just FoundUser
 
         _ ->
             Nothing

@@ -12,7 +12,13 @@ export async function getPhantom(app) {
             phantom = {windowSolana: window.phantom.solana, connection: connection}
         } catch (error) {
             console.log(error.message);
-            app.ports.error.send(error.message);
+            app.ports.exception.send(
+                JSON.stringify(
+                    {
+                        message: error.message
+                    }
+                )
+            );
         }
     } else {
         // send global to elm

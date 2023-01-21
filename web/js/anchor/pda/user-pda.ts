@@ -7,11 +7,16 @@ export interface UserPda extends Pda {
 }
 
 export interface User {
+    wallet: PublicKey
     increment: number
 }
 
-export async function getUserPda(program: Program<SolanaElm>, pda: UserPda): Promise<User> {
-    return await program.account.user.fetch(pda.address)
+export async function getUserPda(provider: AnchorProvider, program: Program<SolanaElm>, pda: UserPda): Promise<User> {
+    const fetched = await program.account.user.fetch(pda.address);
+    return {
+        wallet: provider.wallet.publicKey,
+        increment: fetched.increment
+    }
 }
 
 export function deriveUserPda(provider: AnchorProvider, program: Program<SolanaElm>): UserPda {
