@@ -24,5 +24,5 @@ anchor build
 
 * localhost
 ```shell
-cd ./web http-server
+cd ./web; http-server
 ```
