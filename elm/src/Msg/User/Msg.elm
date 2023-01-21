@@ -2,11 +2,11 @@ module Msg.User.Msg exposing (Msg(..), toString)
 
 
 type Msg
-    = Init
+    = Increment
 
 
 toString : Msg -> String
 toString msg =
     case msg of
-        Init ->
-            "user-init"
+        Increment ->
+            "user-increment"

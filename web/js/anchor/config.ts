@@ -3,5 +3,5 @@ import {PublicKey} from "@solana/web3.js";
 
 
 export const COMMITMENT = "processed";
-export const PROGRAM_ID = new PublicKey("CVRiPDJVgYb4cwrwL56LVFoB3tifgmP6QZDfxfmvXonS");
-export const NETWORK = ""//RPC_URL; TODO
+export const PROGRAM_ID = new PublicKey("CZCZcK4vGvNSikQCTeSfPFazkBGwVBN1c6AjpnwDWgzN");
+export const NETWORK = "http://127.0.0.1:8899"; //RPC_URL

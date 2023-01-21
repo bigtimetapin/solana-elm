@@ -15,8 +15,13 @@ type Local
 urlParser : UrlParser.Parser (Local -> c) c
 urlParser =
     UrlParser.oneOf
-        [ -- user
+        [ -- top
           UrlParser.map
+            (User <| User.Top)
+            UrlParser.top
+
+        -- user
+        , UrlParser.map
             (User <| User.Top)
             (UrlParser.s "user")
         ]

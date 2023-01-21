@@ -1,5 +1,6 @@
 import {getPhantom, getPhantomProvider} from "./phantom";
 import {getEphemeralPP, getPP} from "./anchor/util/context";
+import * as increment from "./anchor/ix/increment";
 
 // init phantom
 let phantom = null;
@@ -42,6 +43,18 @@ export async function main(app, json) {
                         listener: "global-found-wallet-disconnected"
                     }
                 )
+            );
+            // or user increment
+        } else if (sender === "user-increment") {
+            // get phantom
+            phantom = await getPhantom(app);
+            // get provider & program
+            const pp = getPP(phantom);
+            // invoke rpc
+            await increment.ix(
+                app,
+                pp.provider,
+                pp.programs.elm
             );
             // or throw error
         } else {

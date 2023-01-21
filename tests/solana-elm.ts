@@ -12,7 +12,8 @@ describe("solana-elm", () => {
         let pda, _;
         [pda, _] = PublicKey.findProgramAddressSync(
             [
-                Buffer.from("user")
+                Buffer.from("user"),
+                program.provider.publicKey.toBuffer()
             ],
             program.programId
         );

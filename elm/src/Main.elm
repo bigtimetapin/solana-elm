@@ -8,6 +8,8 @@ import Model.Model as Model exposing (Model)
 import Model.State.Exception.Exception as Exception
 import Model.State.Global.Global as Global
 import Model.State.Local.Local as Local exposing (Local)
+import Model.User.State as UserState
+import Model.User.User as User
 import Model.Wallet as Wallet
 import Msg.Js as JsMsg
 import Msg.Msg exposing (Msg(..), resetViewport)
@@ -78,9 +80,17 @@ update msg model =
 
         FromUser fromUserMsg ->
             case fromUserMsg of
-                UserMsg.Init ->
-                    ( model
-                    , Cmd.none
+                UserMsg.Increment ->
+                    ( { model
+                        | state =
+                            { local = model.state.local
+                            , global = model.state.global
+                            , exception = Exception.Waiting
+                            }
+                      }
+                    , sender <|
+                        Sender.encode0 <|
+                            Sender.User fromUserMsg
                     )
 
         FromJs fromJsMsg ->
@@ -103,15 +113,19 @@ update msg model =
                                                 ToLocal.User userListener ->
                                                     case userListener of
                                                         UserListener.Fetched ->
-                                                            ( { model
-                                                                | state =
-                                                                    { local = model.state.local
-                                                                    , global = model.state.global
-                                                                    , exception = Exception.Closed
+                                                            let
+                                                                f user =
+                                                                    { model
+                                                                        | state =
+                                                                            { local =
+                                                                                Local.User <|
+                                                                                    UserState.Fetched user
+                                                                            , global = model.state.global
+                                                                            , exception = Exception.Closed
+                                                                            }
                                                                     }
-                                                              }
-                                                            , Cmd.none
-                                                            )
+                                                            in
+                                                            Listener.decode model json User.decode f
 
                                         -- found msg for global
                                         Listener.Global toGlobal ->

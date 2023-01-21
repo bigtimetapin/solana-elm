@@ -30,3 +30,6 @@ node_modules
 # rpc
 rpc.ts
 rpc.js
+
+# test validator
+test-ledger

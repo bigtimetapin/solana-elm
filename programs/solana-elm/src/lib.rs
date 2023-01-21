@@ -21,6 +21,7 @@ pub struct Increment<'info> {
     #[account(init_if_needed,
     seeds = [
     pda::user::SEED.as_bytes(),
+    payer.key().as_ref()
     ], bump,
     payer = payer,
     space = pda::user::SIZE
